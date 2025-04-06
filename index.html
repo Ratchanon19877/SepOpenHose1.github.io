@@ -2,7 +2,7 @@
 <html lang="th">
 <head>
     <meta charset="UTF-8">
-    <title>ระบบออเดอร์พนักงาน</title>
+    <title>ระบบออเดอร์</title>
     <style>
         body { font-family: sans-serif; background: #f8f8f8; padding: 20px; }
         .order { background: white; padding: 15px; border-radius: 10px; margin-bottom: 15px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
@@ -10,6 +10,8 @@
         .done { background: #d4edda; border: 1px solid #27b548; color: #155724; }
         .btn-done { background: #28a745; color: white; border: none; padding: 8px 16px; border-radius: 5px; cursor: pointer; }
         .btn-done:disabled { background: gray; cursor: default; }
+        .btn-cancel { background: #dc3545; color: white; border: none; padding: 8px 16px; border-radius: 5px; cursor: pointer; margin-left: 10px; }
+        .btn-cancel:disabled { background: gray; cursor: default; }
     </style>
 </head>
 <body>
@@ -25,8 +27,8 @@
             orders.forEach((order, index) => {
                 const orderDiv = document.createElement('div');
                 orderDiv.className = `order ${order.status === 'done' ? 'done' : ''}`;
-                orderDiv.innerHTML = `
-                    <h3>เลขที่ออเดอร์: ${order.id}</h3>
+                orderDiv.innerHTML = ` 
+                    <h3>เลขที่ออเดอร์: ${index + 1}</h3>
                     <p>เวลา: ${order.time}</p>
                     <ul>
                         ${order.items.map(item => `<li>${item.name} - ${item.quantity} ชิ้น</li>`).join('')}
@@ -35,6 +37,7 @@
                     <button class="btn-done" ${order.status === 'done' ? 'disabled' : ''} onclick="markDone(${index})">
                         ${order.status === 'done' ? '✔ เรียบร้อย' : 'ทำรายการเรียบร้อย'}
                     </button>
+                    <button class="btn-cancel" onclick="cancelOrder(${index})">ยกเลิกออเดอร์</button>
                 `;
                 container.appendChild(orderDiv);
             });
@@ -43,6 +46,13 @@
         function markDone(index) {
             const orders = JSON.parse(localStorage.getItem('orders') || '[]');
             orders[index].status = 'done';
+            localStorage.setItem('orders', JSON.stringify(orders));
+            loadOrders();
+        }
+
+        function cancelOrder(index) {
+            const orders = JSON.parse(localStorage.getItem('orders') || '[]');
+            orders.splice(index, 1); // ลบออเดอร์ที่เลือก
             localStorage.setItem('orders', JSON.stringify(orders));
             loadOrders();
         }
