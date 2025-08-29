@@ -12,19 +12,45 @@
         .btn-done:disabled { background: gray; cursor: default; }
         .btn-cancel { background: #dc3545; color: white; border: none; padding: 8px 16px; border-radius: 5px; cursor: pointer; margin-left: 10px; }
         .btn-cancel:disabled { background: gray; cursor: default; }
+
+        /* --- คิวมุมซ้ายบน --- */
+        #queue-display {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: #fffae6;
+            border: 1px solid #ffecb3;
+            padding: 10px 15px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            z-index: 1000;
+        }
+        #queue-display h4 { margin: 0 0 5px 0; font-size: 14px; }
+        #queue-list { margin: 0; padding-left: 15px; font-size: 14px; }
     </style>
 </head>
 <body>
     <h1>รายการออเดอร์ทั้งหมด</h1>
+
+    <!-- คิวมุมซ้ายบน -->
+    <div id="queue-display">
+        <h4>คิวรอทำรายการ:</h4>
+        <ul id="queue-list"></ul>
+    </div>
+
     <div id="orders-container"></div>
 
     <script>
         function loadOrders() {
             const container = document.getElementById('orders-container');
+            const queueList = document.getElementById('queue-list');
             container.innerHTML = '';
+            queueList.innerHTML = '';
+
             const orders = JSON.parse(localStorage.getItem('orders') || '[]');
 
             orders.forEach((order, index) => {
+                // แสดงออร์เดอร์หลัก
                 const orderDiv = document.createElement('div');
                 orderDiv.className = `order ${order.status === 'done' ? 'done' : ''}`;
                 orderDiv.innerHTML = ` 
@@ -40,6 +66,13 @@
                     <button class="btn-cancel" onclick="cancelOrder(${index})">ยกเลิกออเดอร์</button>
                 `;
                 container.appendChild(orderDiv);
+
+                // เพิ่มในคิวถ้ายังไม่ทำเสร็จ
+                if(order.status !== 'done'){
+                    const li = document.createElement('li');
+                    li.textContent = `ออร์เดอร์ #${index + 1}`;
+                    queueList.appendChild(li);
+                }
             });
         }
 
@@ -52,7 +85,7 @@
 
         function cancelOrder(index) {
             const orders = JSON.parse(localStorage.getItem('orders') || '[]');
-            orders.splice(index, 1); // ลบออเดอร์ที่เลือก
+            orders.splice(index, 1);
             localStorage.setItem('orders', JSON.stringify(orders));
             loadOrders();
         }
