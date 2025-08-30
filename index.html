@@ -90,7 +90,10 @@
             loadOrders();
         }
 
-        window.onload = loadOrders;
+        window.onload = () => {
+            oadOrders(); // โหลดครั้งแรกทันที
+            setInterval(loadOrders, 1000); // ตั้งให้โหลดใหม่ทุกๆ 1 วินาที
+        };
     </script>
 </body>
 </html>
